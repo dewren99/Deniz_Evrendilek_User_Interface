@@ -10,23 +10,25 @@
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/design_default_color_secondary">
+        android:background="@color/palette_1">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Header"
-            android:textColor="@color/white"
-            android:textSize="20dp" />
+            android:text="@string/myruns2"
+            android:textColor="@color/palette_5"
+            android:textSize="20sp" />
     </androidx.appcompat.widget.Toolbar>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/Blue_700"
+        android:layout_marginBottom="22dp"
+        android:background="@color/palette_2"
         android:contentDescription="Tabs"
-        app:tabMode="fixed" />
+        app:tabMode="fixed"
+        app:tabTextColor="@color/palette_5" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager_2"

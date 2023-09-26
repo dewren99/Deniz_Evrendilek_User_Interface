@@ -1,10 +1,13 @@
 package com.example.deniz_evrendilek_user_interface
 
 import android.os.Bundle
+import android.text.InputType
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -17,24 +20,39 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class StartFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var spinnerInputType: Spinner;
+    private lateinit var spinnerActivityType: Spinner;
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_start, container, false)
+        val view = inflater.inflate(R.layout.fragment_start, container, false)
+        if (view != null) {
+            setupSpinners(view)
+        }
+        return view
+    }
+
+    private fun setupSpinners(view: View) {
+        spinnerInputType = view.findViewById(R.id.spinner_input_type)
+        spinnerActivityType = view.findViewById(R.id.spinner_activity_type)
+
+        val inputTypeOptions = resources.getStringArray(R.array.InputType)
+        val activityTypeOptions = resources.getStringArray(R.array.ActivityType)
+
+        // Setup Adapters
+        spinnerInputType.adapter = ArrayAdapter(
+            view.context, android.R.layout.simple_spinner_dropdown_item, inputTypeOptions
+        )
+        spinnerActivityType.adapter = ArrayAdapter(
+            view.context, android.R.layout.simple_spinner_dropdown_item, activityTypeOptions
+        )
     }
 
     companion object {
@@ -48,12 +66,11 @@ class StartFragment : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            StartFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+        fun newInstance(param1: String, param2: String) = StartFragment().apply {
+            arguments = Bundle().apply {
+                putString(ARG_PARAM1, param1)
+                putString(ARG_PARAM2, param2)
             }
+        }
     }
 }

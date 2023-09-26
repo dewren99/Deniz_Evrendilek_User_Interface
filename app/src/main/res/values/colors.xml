@@ -16,4 +16,11 @@
     <color name="Pink_800">#ffad1457</color>
     <color name="Red_700">#ffc53929</color>
     <color name="Red_800">#ffb93221</color>
+
+    <!--https://colorhunt.co/palette/fff8ea9e7676815b5b594545-->
+    <color name="palette_1">#594545</color>
+    <color name="palette_2">#815B5B</color>
+    <color name="palette_3">#9E7676</color>
+    <color name="palette_4">#FFF8EA</color>
+    <color name="palette_5">#FFF8EA</color>
 </resources>
