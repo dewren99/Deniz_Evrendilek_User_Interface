@@ -1,0 +1,59 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:divider="@color/black">
+
+    <PreferenceCategory
+        app:allowDividerBelow="false"
+        app:iconSpaceReserved="false"
+        app:title="Account Preferences">
+
+        <EditTextPreference
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false"
+            app:title="Name, Email, Class, etc"
+            app:useSimpleSummaryProvider="true" />
+
+        <CheckBoxPreference
+            app:allowDividerAbove="true"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false"
+            app:summary="Posting your records anonymously"
+            app:title="Privacy Setting" />
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:allowDividerBelow="false"
+        app:iconSpaceReserved="false"
+        app:title="Additional Settings">
+
+        <ListPreference
+            app:iconSpaceReserved="false"
+            app:summary="Select the units"
+            app:title="Unit Preference" />
+
+        <EditTextPreference
+            app:allowDividerAbove="true"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false"
+            app:summary="Please enter your comments"
+            app:title="Comments" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="true"
+        app:iconSpaceReserved="false"
+        app:title="Misc.">
+        <Preference
+            android:key="webpage"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false"
+            app:summary="https://www.sfu.ca/computing.html"
+            app:title="Webpage" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
