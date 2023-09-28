@@ -7,13 +7,15 @@
         app:iconSpaceReserved="false"
         app:title="Account Preferences">
 
-        <EditTextPreference
+        <Preference
+            android:key="profile"
             app:allowDividerBelow="true"
             app:iconSpaceReserved="false"
-            app:title="Name, Email, Class, etc"
-            app:useSimpleSummaryProvider="true" />
+            app:summary="Your Profile"
+            app:title="Name, Email, Class, etc" />
 
         <CheckBoxPreference
+            android:key="privacy"
             app:allowDividerAbove="true"
             app:allowDividerBelow="false"
             app:iconSpaceReserved="false"
@@ -29,11 +31,15 @@
         app:title="Additional Settings">
 
         <ListPreference
+            android:entries="@array/unit_preference"
+            android:entryValues="@array/unit_preference"
+            android:key="unit_preference"
             app:iconSpaceReserved="false"
             app:summary="Select the units"
             app:title="Unit Preference" />
 
         <EditTextPreference
+            android:key="comments"
             app:allowDividerAbove="true"
             app:allowDividerBelow="true"
             app:iconSpaceReserved="false"

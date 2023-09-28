@@ -27,7 +27,11 @@
         android:layout_marginBottom="22dp"
         android:background="@color/palette_2"
         android:contentDescription="Tabs"
+        app:tabGravity="fill"
+        app:tabIndicatorColor="@color/palette_4"
+        app:tabMaxWidth="0dp"
         app:tabMode="fixed"
+        app:tabRippleColor="@color/palette_3"
         app:tabTextColor="@color/palette_5" />
 
     <androidx.viewpager2.widget.ViewPager2
