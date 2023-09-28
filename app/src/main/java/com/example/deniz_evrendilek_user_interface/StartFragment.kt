@@ -1,13 +1,12 @@
 package com.example.deniz_evrendilek_user_interface
 
 import android.os.Bundle
-import android.text.InputType
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import androidx.fragment.app.Fragment
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -20,8 +19,8 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class StartFragment : Fragment() {
-    private lateinit var spinnerInputType: Spinner;
-    private lateinit var spinnerActivityType: Spinner;
+    private lateinit var spinnerInputType: Spinner
+    private lateinit var spinnerActivityType: Spinner
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
