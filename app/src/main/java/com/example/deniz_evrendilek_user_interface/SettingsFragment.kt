@@ -3,6 +3,9 @@ package com.example.deniz_evrendilek_user_interface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.preference.CheckBoxPreference
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
@@ -33,13 +36,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 ?: throw NoSuchFieldError("privacyPreference preference not found")
 
         profilePreference.setOnPreferenceClickListener {
-            println("profilePreference click")
-            true
+            navigateToProfile()
         }
         privacyPreference.setOnPreferenceChangeListener { _, newValue ->
             println("privacyPreference $newValue")
             true
         }
+    }
+
+    private fun navigateToProfile(): Boolean {
+        println("profilePreference click")
+        val navHostFragment = requireActivity().supportFragmentManager.findFragmentById(
+            R.id.nav_host_fragment
+        ) as NavHostFragment
+        navHostFragment.navController.navigate(R.id.profileFragment)
+        return true
     }
 
     private fun setupAdditionalSettings() {

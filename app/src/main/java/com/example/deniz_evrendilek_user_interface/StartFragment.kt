@@ -10,10 +10,13 @@ import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 
+
 class StartFragment : Fragment() {
     private lateinit var spinnerInputType: Spinner
     private lateinit var spinnerActivityType: Spinner
+    private lateinit var buttonSave: Button
 
+    @Suppress("RedundantOverride")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -23,19 +26,18 @@ class StartFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_start, container, false)
-        if (view != null) {
-            setupSpinners(view)
-            val buttonSave: Button = view.findViewById(R.id.save)
-            buttonSave.setOnClickListener {
-                findNavController().navigate(R.id.action_mainFragment_to_blankFragment)
-            }
-        }
+        setupViews(view)
         return view
     }
 
-    private fun setupSpinners(view: View) {
+    private fun navigateToEntryCreation() {
+        findNavController().navigate(R.id.action_mainFragment_to_entryFragment)
+    }
+
+    private fun setupViews(view: View) {
         spinnerInputType = view.findViewById(R.id.spinner_input_type)
         spinnerActivityType = view.findViewById(R.id.spinner_activity_type)
+        buttonSave = view.findViewById(R.id.save)
 
         val inputTypeOptions = resources.getStringArray(R.array.InputType)
         val activityTypeOptions = resources.getStringArray(R.array.ActivityType)
@@ -47,5 +49,9 @@ class StartFragment : Fragment() {
         spinnerActivityType.adapter = ArrayAdapter(
             view.context, android.R.layout.simple_spinner_dropdown_item, activityTypeOptions
         )
+
+        buttonSave.setOnClickListener {
+            navigateToEntryCreation()
+        }
     }
 }
