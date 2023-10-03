@@ -1,4 +1,4 @@
-package com.example.deniz_evrendilek_user_interface
+package com.example.deniz_evrendilek_user_interface.user_exercise_entry
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -12,12 +12,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.ListView
-import android.widget.TextView
 import android.widget.TimePicker
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.example.deniz_evrendilek_user_interface.R
 
 val ENTRY_OPTIONS = arrayOf(
     "Date", "Time", "Duration", "Distance", "Calories", "Heart Rate", "Comment"
@@ -31,12 +33,10 @@ class EntryFragment : Fragment(),
         TimePickerDialog.OnTimeSetListener {
     private lateinit var view: View
     private lateinit var listView: ListView
+    private lateinit var buttonSave: Button
+    private lateinit var buttonCancel: Button
 
-    private var day: Int? = null
-    private var month: Int? = null
-    private var year: Int? = null
-    private var hour: Int? = null
-    private var minute: Int? = null
+    private var exerciseDataState = ExerciseDataState()
 
 
     @Suppress("RedundantOverride")
@@ -74,40 +74,54 @@ class EntryFragment : Fragment(),
                 else -> throw IllegalStateException("Unexpected listView selection: $selected")
             }
         }
+
+        buttonSave = view.findViewById(R.id.manual_entry_save_button)
+        buttonCancel = view.findViewById(R.id.manual_entry_cancel_button)
+        buttonSave.setOnClickListener {
+            findNavController().navigate(R.id.action_entryFragment_to_mainFragment)
+        }
+        buttonCancel.setOnClickListener {
+            findNavController().navigate(R.id.action_entryFragment_to_mainFragment)
+        }
     }
 
     private fun createAndShowDatePicker() {
         val calendar: Calendar = Calendar.getInstance()
-        if (day == null || month == null || year == null) {
-            day = calendar.get(Calendar.DAY_OF_MONTH)
-            month = calendar.get(Calendar.MONTH)
-            year = calendar.get(Calendar.YEAR)
+        if (exerciseDataState.day == null || exerciseDataState.month == null || exerciseDataState.year == null) {
+            exerciseDataState.day = calendar.get(Calendar.DAY_OF_MONTH)
+            exerciseDataState.month = calendar.get(Calendar.MONTH)
+            exerciseDataState.year = calendar.get(Calendar.YEAR)
         }
+        val (day, month, year) = exerciseDataState
         val datePickerDialog = DatePickerDialog(requireActivity(), this, year!!, month!!, day!!)
         datePickerDialog.show()
     }
 
     private fun createAndShowTimePicker() {
         val calendar: Calendar = Calendar.getInstance()
-        this.hour = calendar.get(Calendar.HOUR)
-        this.minute = calendar.get(Calendar.MINUTE)
+        exerciseDataState.hour = calendar.get(Calendar.HOUR)
+        exerciseDataState.minute = calendar.get(Calendar.MINUTE)
 
         val timePickerDialog = TimePickerDialog(
-            requireActivity(), this, hour!!, minute!!, DateFormat.is24HourFormat(requireContext())
+            requireActivity(),
+            this,
+            exerciseDataState.hour!!,
+            exerciseDataState.minute!!,
+            DateFormat.is24HourFormat(requireContext())
         )
         timePickerDialog.show()
     }
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        this.year = year
-        this.month = month
-        this.day = dayOfMonth
+        exerciseDataState.year = year
+        exerciseDataState.month = month
+        exerciseDataState.day = dayOfMonth
     }
 
     override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-        this.hour = hourOfDay
-        this.minute = minute
-        println("$hourOfDay:$minute $day/$month/$year")
+        exerciseDataState.hour = hourOfDay
+        exerciseDataState.minute = minute
+        println("$hourOfDay:$minute")
     }
 
     @Suppress("SameParameterValue")

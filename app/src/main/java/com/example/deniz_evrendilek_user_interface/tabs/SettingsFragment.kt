@@ -1,16 +1,15 @@
-package com.example.deniz_evrendilek_user_interface
+package com.example.deniz_evrendilek_user_interface.tabs
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.preference.CheckBoxPreference
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.example.deniz_evrendilek_user_interface.R
 
 class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var profilePreference: Preference

@@ -5,9 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.example.deniz_evrendilek_user_interface.tabs.HistoryFragment
+import com.example.deniz_evrendilek_user_interface.tabs.SettingsFragment
+import com.example.deniz_evrendilek_user_interface.tabs.StartFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
