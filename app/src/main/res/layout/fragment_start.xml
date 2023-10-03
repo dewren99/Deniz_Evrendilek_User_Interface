@@ -43,11 +43,11 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/save"
+        android:id="@+id/start"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/palette_2"
-        android:text="Save"
+        android:text="START"
         android:textColor="@color/palette_5" />
 
 </LinearLayout>

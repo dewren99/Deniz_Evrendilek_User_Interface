@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
@@ -14,7 +15,9 @@ import androidx.navigation.fragment.findNavController
 class StartFragment : Fragment() {
     private lateinit var spinnerInputType: Spinner
     private lateinit var spinnerActivityType: Spinner
-    private lateinit var buttonSave: Button
+    private lateinit var buttonStart: Button
+
+    private var selectedInputType: String? = null
 
     @Suppress("RedundantOverride")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,14 +33,10 @@ class StartFragment : Fragment() {
         return view
     }
 
-    private fun navigateToEntryCreation() {
-        findNavController().navigate(R.id.action_mainFragment_to_entryFragment)
-    }
-
     private fun setupViews(view: View) {
         spinnerInputType = view.findViewById(R.id.spinner_input_type)
         spinnerActivityType = view.findViewById(R.id.spinner_activity_type)
-        buttonSave = view.findViewById(R.id.save)
+        buttonStart = view.findViewById(R.id.start)
 
         val inputTypeOptions = resources.getStringArray(R.array.InputType)
         val activityTypeOptions = resources.getStringArray(R.array.ActivityType)
@@ -50,8 +49,38 @@ class StartFragment : Fragment() {
             view.context, android.R.layout.simple_spinner_dropdown_item, activityTypeOptions
         )
 
-        buttonSave.setOnClickListener {
-            navigateToEntryCreation()
+        spinnerInputType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?, view: View?, position: Int, id: Long
+            ) {
+                if (parent == null) {
+                    throw IllegalAccessError("No parent found")
+                }
+                selectedInputType = parent.getItemAtPosition(position).toString()
+                println(selectedInputType)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+
         }
+
+        buttonStart.setOnClickListener {
+            when (selectedInputType) {
+                inputTypeOptions[0] -> navigateToEntryCreation()
+                inputTypeOptions[1] -> navigateToMap()
+                inputTypeOptions[2] -> navigateToMap()
+                else -> throw IllegalStateException("Unexpected input type navigation")
+            }
+        }
+    }
+
+    private fun navigateToMap() {
+        findNavController().navigate(R.id.action_mainFragment_to_mapFragment)
+    }
+
+    private fun navigateToEntryCreation() {
+        findNavController().navigate(R.id.action_mainFragment_to_entryFragment)
     }
 }
