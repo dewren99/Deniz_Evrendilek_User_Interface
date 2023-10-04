@@ -25,13 +25,6 @@
             android:textSize="20sp" />
     </androidx.appcompat.widget.Toolbar>
 
-    <!--    <androidx.fragment.app.FragmentContainerView-->
-    <!--        android:id="@+id/fragment_main"-->
-    <!--        android:name="com.example.deniz_evrendilek_user_interface.MainFragment"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        tools:layout="@layout/fragment_main" />-->
-
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"

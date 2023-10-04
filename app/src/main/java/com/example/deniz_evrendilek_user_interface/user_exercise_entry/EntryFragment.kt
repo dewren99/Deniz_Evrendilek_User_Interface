@@ -17,6 +17,7 @@ import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.ListView
 import android.widget.TimePicker
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.deniz_evrendilek_user_interface.R
@@ -82,6 +83,7 @@ class EntryFragment : Fragment(),
         }
         buttonCancel.setOnClickListener {
             findNavController().navigate(R.id.action_entryFragment_to_mainFragment)
+            Toast.makeText(requireContext(), "Entry discarded", Toast.LENGTH_SHORT).show()
         }
     }
 
