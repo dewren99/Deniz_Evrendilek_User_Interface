@@ -1,4 +1,4 @@
-package com.example.deniz_evrendilek_user_interface.user_exercise_entry
+package com.example.deniz_evrendilek_user_interface.ui.fragments
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -21,6 +21,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.deniz_evrendilek_user_interface.R
+import com.example.deniz_evrendilek_user_interface.data.ExerciseDataState
 
 val ENTRY_OPTIONS = arrayOf(
     "Date", "Time", "Duration", "Distance", "Calories", "Heart Rate", "Comment"
@@ -161,7 +162,8 @@ class EntryFragment : Fragment(),
     }
 
     private fun createAndShowDurationDialog() {
-        val dialog = createInputDialog(ENTRY_OPTIONS[2],
+        val dialog = createInputDialog(
+            ENTRY_OPTIONS[2],
             InputType.TYPE_CLASS_NUMBER,
             null,
             POSITIVE_BUTTON_TEXT,
@@ -172,7 +174,8 @@ class EntryFragment : Fragment(),
     }
 
     private fun createAndShowDistanceDialog() {
-        val dialog = createInputDialog(ENTRY_OPTIONS[3],
+        val dialog = createInputDialog(
+            ENTRY_OPTIONS[3],
             InputType.TYPE_CLASS_NUMBER,
             null,
             POSITIVE_BUTTON_TEXT,
@@ -183,7 +186,8 @@ class EntryFragment : Fragment(),
     }
 
     private fun createAndShowCaloriesDialog() {
-        val dialog = createInputDialog(ENTRY_OPTIONS[4],
+        val dialog = createInputDialog(
+            ENTRY_OPTIONS[4],
             InputType.TYPE_CLASS_NUMBER,
             null,
             POSITIVE_BUTTON_TEXT,
@@ -194,7 +198,8 @@ class EntryFragment : Fragment(),
     }
 
     private fun createAndShowHeartRateDialog() {
-        val dialog = createInputDialog(ENTRY_OPTIONS[5],
+        val dialog = createInputDialog(
+            ENTRY_OPTIONS[5],
             InputType.TYPE_CLASS_NUMBER,
             null,
             POSITIVE_BUTTON_TEXT,
@@ -206,7 +211,8 @@ class EntryFragment : Fragment(),
 
     private fun createAndShowCommentDialog() {
         val hint = "How did it go? Notes here."
-        val dialog = createInputDialog(ENTRY_OPTIONS[6],
+        val dialog = createInputDialog(
+            ENTRY_OPTIONS[6],
             InputType.TYPE_TEXT_FLAG_MULTI_LINE,
             hint,
             POSITIVE_BUTTON_TEXT,

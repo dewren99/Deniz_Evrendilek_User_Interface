@@ -1,4 +1,4 @@
-package com.example.deniz_evrendilek_user_interface.tabs
+package com.example.deniz_evrendilek_user_interface.ui.fragments.tabs
 
 import android.os.Bundle
 import android.view.LayoutInflater

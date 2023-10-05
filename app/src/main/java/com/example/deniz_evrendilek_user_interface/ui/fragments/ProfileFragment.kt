@@ -1,4 +1,4 @@
-package com.example.deniz_evrendilek_user_interface
+package com.example.deniz_evrendilek_user_interface.ui.fragments
 
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
@@ -17,13 +17,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RadioGroup
-import android.widget.TableLayout
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.tabs.TabLayout.Tab
+import com.example.deniz_evrendilek_user_interface.R
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

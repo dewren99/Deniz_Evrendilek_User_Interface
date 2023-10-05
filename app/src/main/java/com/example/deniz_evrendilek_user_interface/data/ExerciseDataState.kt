@@ -1,4 +1,4 @@
-package com.example.deniz_evrendilek_user_interface.user_exercise_entry
+package com.example.deniz_evrendilek_user_interface.data
 
 data class ExerciseDataState(
     var day: Int? = null,

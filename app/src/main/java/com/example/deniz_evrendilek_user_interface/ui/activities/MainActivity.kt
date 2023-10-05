@@ -1,9 +1,8 @@
-package com.example.deniz_evrendilek_user_interface
+package com.example.deniz_evrendilek_user_interface.ui.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
+import com.example.deniz_evrendilek_user_interface.R
 
 class MainActivity : AppCompatActivity() {
 

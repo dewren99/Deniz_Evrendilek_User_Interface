@@ -13,7 +13,7 @@
         android:layout_height="0dp"
         android:stackFromBottom="true"
         android:transcriptMode="alwaysScroll"
-        tools:context=".user_exercise_entry.EntryFragment">
+        tools:context=".ui.fragments.EntryFragment">
 
 
     </ListView>

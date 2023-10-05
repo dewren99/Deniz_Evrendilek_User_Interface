@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.example.deniz_evrendilek_user_interface.MainFragment"
+        android:name="com.example.deniz_evrendilek_user_interface.ui.fragments.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main">
         <action
@@ -22,7 +22,7 @@
     </fragment>
     <fragment
         android:id="@+id/entryFragment"
-        android:name="com.example.deniz_evrendilek_user_interface.user_exercise_entry.EntryFragment"
+        android:name="com.example.deniz_evrendilek_user_interface.ui.fragments.EntryFragment"
         android:label="fragment_entry"
         tools:layout="@layout/fragment_entry">
         <action
@@ -31,7 +31,7 @@
     </fragment>
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.example.deniz_evrendilek_user_interface.user_exercise_entry.MapFragment"
+        android:name="com.example.deniz_evrendilek_user_interface.ui.fragments.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map">
         <action
@@ -40,7 +40,7 @@
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.deniz_evrendilek_user_interface.ProfileFragment"
+        android:name="com.example.deniz_evrendilek_user_interface.ui.fragments.ProfileFragment"
         android:label="ProfileFragment">
         <action
             android:id="@+id/action_profileFragment_to_mainFragment"

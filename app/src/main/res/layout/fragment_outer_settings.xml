@@ -4,7 +4,7 @@
     android:id="@+id/settings_outer_fragment"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".tabs.SettingsOuterFragment">
+    tools:context=".ui.fragments.tabs.SettingsOuterFragment">
 
     <LinearLayout
         android:id="@+id/fragment_settings_placeholder"

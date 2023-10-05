@@ -1,4 +1,4 @@
-package com.example.deniz_evrendilek_user_interface
+package com.example.deniz_evrendilek_user_interface.ui.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -8,9 +8,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.example.deniz_evrendilek_user_interface.tabs.HistoryFragment
-import com.example.deniz_evrendilek_user_interface.tabs.SettingsOuterFragment
-import com.example.deniz_evrendilek_user_interface.tabs.StartFragment
+import com.example.deniz_evrendilek_user_interface.R
+import com.example.deniz_evrendilek_user_interface.ui.fragments.tabs.HistoryFragment
+import com.example.deniz_evrendilek_user_interface.ui.fragments.tabs.SettingsOuterFragment
+import com.example.deniz_evrendilek_user_interface.ui.fragments.tabs.StartFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 

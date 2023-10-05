@@ -1,4 +1,4 @@
-package com.example.deniz_evrendilek_user_interface.user_exercise_entry
+package com.example.deniz_evrendilek_user_interface.ui.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
