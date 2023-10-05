@@ -16,24 +16,15 @@
         <action
             android:id="@+id/action_mainFragment_to_mapFragment"
             app:destination="@id/mapFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/settingsFragment"
-        android:name="com.example.deniz_evrendilek_user_interface.tabs.SettingsFragment"
-        android:label="SettingsFragment">
         <action
-            android:id="@+id/action_settingsFragment_to_profileFragment"
+            android:id="@+id/action_mainFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/profileFragment"
-        android:name="com.example.deniz_evrendilek_user_interface.ProfileFragment"
-        android:label="ProfileFragment" />
     <fragment
         android:id="@+id/entryFragment"
         android:name="com.example.deniz_evrendilek_user_interface.user_exercise_entry.EntryFragment"
         android:label="fragment_entry"
-        tools:layout="@layout/fragment_entry" >
+        tools:layout="@layout/fragment_entry">
         <action
             android:id="@+id/action_entryFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
@@ -42,9 +33,17 @@
         android:id="@+id/mapFragment"
         android:name="com.example.deniz_evrendilek_user_interface.user_exercise_entry.MapFragment"
         android:label="fragment_map"
-        tools:layout="@layout/fragment_map" >
+        tools:layout="@layout/fragment_map">
         <action
             android:id="@+id/action_mapFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.deniz_evrendilek_user_interface.ProfileFragment"
+        android:label="ProfileFragment">
+        <action
+            android:id="@+id/action_profileFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
     </fragment>
 </navigation>

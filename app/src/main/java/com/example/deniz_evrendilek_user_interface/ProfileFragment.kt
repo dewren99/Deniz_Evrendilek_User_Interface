@@ -17,10 +17,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RadioGroup
+import android.widget.TableLayout
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.google.android.material.tabs.TabLayout.Tab
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -214,8 +217,8 @@ class ProfileFragment : Fragment() {
         inputMajor = findViewById(R.id.input_major)
     }
 
-    private fun exitApp() {
-        // TODO
+    private fun exitProfile() {
+        findNavController().navigate(R.id.action_profileFragment_to_mainFragment)
     }
 
     private fun getFormValues(): Map<String, Any> {
@@ -250,17 +253,17 @@ class ProfileFragment : Fragment() {
         println("Save Info")
         saveProfile()
         displayToastMessage("Saved!")
-        exitApp()
+        exitProfile()
     }
 
     private fun handleOnCancelSave() {
         println("Cancel Save Info")
-        exitApp()
+        exitProfile()
     }
 
     private fun handleOnSelectImage() {
         if (!hasCameraPermission()) {
-            exitApp()
+            exitProfile()
             return
         }
         println("Select Image")

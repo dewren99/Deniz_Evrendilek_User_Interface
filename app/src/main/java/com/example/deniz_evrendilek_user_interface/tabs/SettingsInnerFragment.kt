@@ -11,7 +11,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.example.deniz_evrendilek_user_interface.R
 
-class SettingsFragment : PreferenceFragmentCompat() {
+class SettingsInnerFragment : PreferenceFragmentCompat() {
     private lateinit var profilePreference: Preference
     private lateinit var privacyPreference: CheckBoxPreference
     private lateinit var unitPreference: ListPreference
