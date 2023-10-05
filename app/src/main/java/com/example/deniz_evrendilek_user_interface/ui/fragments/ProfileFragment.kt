@@ -2,6 +2,7 @@ package com.example.deniz_evrendilek_user_interface.ui.fragments
 
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -9,6 +10,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.provider.MediaStore
 import android.provider.MediaStore.ACTION_IMAGE_CAPTURE
 import android.view.LayoutInflater
 import android.view.View
@@ -260,14 +262,35 @@ class ProfileFragment : Fragment() {
         exitProfile()
     }
 
-    private fun handleOnSelectImage() {
+    private fun handleSelectImageWithCamera() {
         if (!hasCameraPermission()) {
             exitProfile()
             return
         }
         println("Select Image")
-        val takePicIntent = Intent(ACTION_IMAGE_CAPTURE)
-        @Suppress("DEPRECATION") startActivityForResult(takePicIntent, REQUEST_IMAGE_CAPTURE)
+        val cameraIntent = Intent(ACTION_IMAGE_CAPTURE)
+        @Suppress("DEPRECATION") startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE)
+    }
+
+    private fun handleSelectImageFromGallery() {
+        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+        @Suppress("DEPRECATION") startActivityForResult(galleryIntent, 1000)
+    }
+
+    private fun handleOnSelectImage() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Select Image")
+        val options = arrayOf("Take Picture", "Choose from Gallery")
+        builder.setItems(options) { _, which ->
+            when (which) {
+                0 -> handleSelectImageWithCamera()
+                1 -> handleSelectImageFromGallery()
+                else -> null
+            }
+        }
+
+        val dialog = builder.create()
+        dialog.show()
     }
 
     /**
