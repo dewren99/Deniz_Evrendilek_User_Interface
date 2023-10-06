@@ -1,9 +1,34 @@
 package com.example.deniz_evrendilek_user_interface.managers
 
-import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 
-class SharedPreferencesManager(private val activity: Activity) {
-    private val sharedPreferences: SharedPreferences = activity.getPreferences(Context.MODE_PRIVATE)
+class SharedPreferencesManager(preferenceKey: String, context: Context) {
+    companion object {
+        const val PROFILE_PREFERENCES = "PROFILE_PREFERENCES"
+    }
+
+    private val sharedPreferences: SharedPreferences =
+        context.getSharedPreferences(preferenceKey, Context.MODE_PRIVATE)
+
+    @Suppress("unused")
+    fun saveValue(key: String, value: Int) {
+        val editor = sharedPreferences.edit()
+        editor.putInt(key, value)
+        editor.apply()
+    }
+
+    fun saveValue(key: String, value: String) {
+        val editor = sharedPreferences.edit()
+        editor.putString(key, value)
+        editor.apply()
+    }
+
+    fun getValue(key: String, defaultValue: Int): Int {
+        return sharedPreferences.getInt(key, defaultValue)
+    }
+
+    fun getValue(key: String, defaultValue: String = ""): String {
+        return sharedPreferences.getString(key, defaultValue)!!
+    }
 }

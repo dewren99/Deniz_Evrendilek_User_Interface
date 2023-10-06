@@ -1,9 +1,7 @@
 package com.example.deniz_evrendilek_user_interface.ui.fragments
 
-import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -25,6 +23,7 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.deniz_evrendilek_user_interface.R
+import com.example.deniz_evrendilek_user_interface.data.ProfileData
 import com.example.deniz_evrendilek_user_interface.managers.PermissionsManager
 import java.io.File
 import java.io.FileOutputStream
@@ -53,6 +52,8 @@ class ProfileFragment : Fragment() {
     private var profilePicUri: Uri? = null
     private lateinit var view: View
 
+    private lateinit var profileData: ProfileData
+
     private fun setProfilePic(uri: Uri) {
         profilePicUri = uri
         profilePicImageView.setImageURI(profilePicUri)
@@ -76,6 +77,7 @@ class ProfileFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_profile, container, false)
+        profileData = ProfileData(requireContext())
         setupProfilePage()
         return view
     }
@@ -107,55 +109,37 @@ class ProfileFragment : Fragment() {
     }
 
     private fun loadProfile() {
-        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
-        val name = sharedPreferences.getString("nameInput", "")
-        val email = sharedPreferences.getString("emailInput", "")
-        val phone = sharedPreferences.getString("phoneInput", "")
-        val gender = sharedPreferences.getInt("genderRadio", -1)
-        val personClass = sharedPreferences.getString("classInput", "")
-        val major = sharedPreferences.getString("majorInput", "")
-        val maybeUri = sharedPreferences.getString("profilePicUri", null)?.toUri()
+        val data = profileData.load()
 
-        println(
-            "loading data:$name, $email, $phone, $gender, $personClass, $major, $profilePicUri",
-        )
+        inputName.setText(data[ProfileData.KEYS.NAME])
+        inputEmail.setText(data[ProfileData.KEYS.EMAIL])
+        inputPhone.setText(data[ProfileData.KEYS.PHONE])
+        radioGroupGender.check(data[ProfileData.KEYS.GENDER]?.toIntOrNull() ?: -1)
+        inputClass.setText(data[ProfileData.KEYS.EMAIL])
+        inputMajor.setText(data[ProfileData.KEYS.EMAIL])
 
-        inputName.setText(name)
-        inputEmail.setText(email)
-        inputPhone.setText(phone)
-        radioGroupGender.check(gender)
-        inputClass.setText(personClass)
-        inputMajor.setText(major)
-        if (maybeUri != null) {
+        val maybeUri = data[ProfileData.KEYS.PROFILE_IMAGE_URI]?.toUri()
+        val emptyUri = "".toUri()
+        if (maybeUri != null && maybeUri != emptyUri) {
             setProfilePic(maybeUri)
             println("profilePicUri is valid: $profilePicUri")
         }
     }
 
-    @SuppressLint("ApplySharedPref")
     private fun saveProfile() {
-        val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
-        val sharedPrefEditor = sharedPref.edit()
-
         // Retrieve values from input fields using getFormValues()
         val formValues = getFormValues()
-        sharedPrefEditor.putString("nameInput", formValues["nameInput"].toString())
-        sharedPrefEditor.putString("emailInput", formValues["emailInput"].toString())
-        sharedPrefEditor.putString("phoneInput", formValues["phoneInput"].toString())
-        sharedPrefEditor.putInt(
-            "genderRadio", Integer.parseInt(formValues["genderRadio"].toString())
+        val currUri = getProfilePic() ?: ""
+
+        profileData.save(
+            formValues["nameInput"].toString(),
+            formValues["emailInput"].toString(),
+            formValues["phoneInput"].toString(),
+            formValues["genderRadio"].toString(),
+            formValues["classInput"].toString(),
+            formValues["majorInput"].toString(),
+            currUri.toString()
         )
-        sharedPrefEditor.putString("classInput", formValues["classInput"].toString())
-        sharedPrefEditor.putString("majorInput", formValues["majorInput"].toString())
-
-        val currUri = getProfilePic()
-        if (currUri != null) {
-            sharedPrefEditor.putString(
-                "profilePicUri", currUri.toString()
-            )
-        }
-
-        sharedPrefEditor.commit()
     }
 
     private fun displayToastMessage(message: String, duration: Int = Toast.LENGTH_SHORT) {
@@ -301,7 +285,7 @@ class ProfileFragment : Fragment() {
             when (which) {
                 0 -> handleSelectImageWithCamera()
                 1 -> handleSelectImageFromGallery()
-                else -> null
+                else -> throw IllegalAccessError("Cannot find the select image type")
             }
         }
 
