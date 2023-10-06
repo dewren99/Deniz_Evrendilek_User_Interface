@@ -1,6 +1,7 @@
 package com.example.deniz_evrendilek_user_interface.managers
 
 import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 
@@ -14,13 +15,16 @@ class PermissionsManager(private val activity: Activity) {
 
     fun hasPermission(permission: String): Boolean {
         return ActivityCompat.checkSelfPermission(
-            activity,
-            permission
+            activity, permission
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun requestPermissions(vararg permissions: String) {
-        ActivityCompat.requestPermissions(activity, permissions, PERMISSION_IMAGE_CAPTURE)
+    fun requestPermission(permission: String, requestCode: Int) {
+        ActivityCompat.requestPermissions(activity, arrayOf(permission), requestCode)
+    }
+
+    fun requestPermissions(vararg permissions: String, requestCode: Int) {
+        ActivityCompat.requestPermissions(activity, permissions, requestCode)
     }
 
     fun onRequestPermissionsResult(
@@ -37,5 +41,19 @@ class PermissionsManager(private val activity: Activity) {
                 onPermissionDenied()
             }
         }
+    }
+
+    fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        actionMap: Map<Int, () -> Unit>,
+    ) {
+        if (resultCode != Activity.RESULT_OK) {
+            println("onActivityResult $resultCode != RESULT_OK")
+            return
+        }
+
+        actionMap[requestCode]?.invoke()
     }
 }

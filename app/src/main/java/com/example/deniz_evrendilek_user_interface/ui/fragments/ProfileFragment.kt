@@ -1,9 +1,7 @@
 package com.example.deniz_evrendilek_user_interface.ui.fragments
 
-import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -17,22 +15,17 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RadioGroup
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.deniz_evrendilek_user_interface.R
 import com.example.deniz_evrendilek_user_interface.data.ProfileData
 import com.example.deniz_evrendilek_user_interface.managers.PermissionsManager
+import com.example.deniz_evrendilek_user_interface.managers.ToastManager
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-
-const val REQUEST_IMAGE_CAPTURE = 1
-const val REQUEST_READ_STORAGE = 2
-const val REQUEST_WRITE_STORAGE = 3
 
 class ProfileFragment : Fragment() {
     // Buttons | Images
@@ -53,6 +46,8 @@ class ProfileFragment : Fragment() {
     private lateinit var view: View
 
     private lateinit var profileData: ProfileData
+    private lateinit var permissionsManager: PermissionsManager
+    private lateinit var toastManager: ToastManager
 
     private fun setProfilePic(uri: Uri) {
         profilePicUri = uri
@@ -78,6 +73,8 @@ class ProfileFragment : Fragment() {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_profile, container, false)
         profileData = ProfileData(requireContext())
+        permissionsManager = PermissionsManager(requireActivity())
+        toastManager = ToastManager(requireContext())
         setupProfilePage()
         return view
     }
@@ -142,54 +139,40 @@ class ProfileFragment : Fragment() {
         )
     }
 
-    private fun displayToastMessage(message: String, duration: Int = Toast.LENGTH_SHORT) {
-        Toast.makeText(requireContext(), message, duration).show()
-    }
-
     private fun hasCameraPermission(): Boolean {
-        return ActivityCompat.checkSelfPermission(
-            requireContext(), android.Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED
+        return permissionsManager.hasPermission(android.Manifest.permission.CAMERA)
     }
 
     private fun hasReadStoragePermission(): Boolean {
-        return ActivityCompat.checkSelfPermission(
-            requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
+        return permissionsManager.hasPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
     }
 
     private fun hasWriteStoragePermission(): Boolean {
-        return ActivityCompat.checkSelfPermission(
-            requireContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
+        return permissionsManager.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
     }
 
     private fun maybeRequestCameraPermission() {
         if (!hasCameraPermission()) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(android.Manifest.permission.CAMERA),
-                REQUEST_IMAGE_CAPTURE
+            permissionsManager.requestPermission(
+                android.Manifest.permission.CAMERA, PermissionsManager.PERMISSION_IMAGE_CAPTURE
             )
         }
     }
 
     private fun maybeRequestReadStoragePermission() {
         if (!hasReadStoragePermission()) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                REQUEST_READ_STORAGE
+            permissionsManager.requestPermission(
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                PermissionsManager.PERMISSION_READ_STORAGE
             )
         }
     }
 
     private fun maybeRequestWriteStoragePermission() {
         if (!hasWriteStoragePermission()) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                REQUEST_WRITE_STORAGE
+            permissionsManager.requestPermission(
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                PermissionsManager.PERMISSION_WRITE_STORAGE
             )
         }
     }
@@ -250,7 +233,7 @@ class ProfileFragment : Fragment() {
     private fun handleOnSave() {
         println("Save Info")
         saveProfile()
-        displayToastMessage("Saved!")
+        toastManager.showToast("Saved!")
         exitProfile()
     }
 
@@ -266,14 +249,15 @@ class ProfileFragment : Fragment() {
         }
         println("Select Image")
         val cameraIntent = Intent(ACTION_IMAGE_CAPTURE)
-        @Suppress("DEPRECATION") startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE)
+        @Suppress("DEPRECATION") startActivityForResult(
+            cameraIntent, PermissionsManager.PERMISSION_IMAGE_CAPTURE
+        )
     }
 
     private fun handleSelectImageFromGallery() {
         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
         @Suppress("DEPRECATION") startActivityForResult(
-            galleryIntent,
-            PermissionsManager.PERMISSION_PICK
+            galleryIntent, PermissionsManager.PERMISSION_PICK
         )
     }
 
@@ -299,37 +283,28 @@ class ProfileFragment : Fragment() {
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         @Suppress("DEPRECATION") super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != RESULT_OK) {
-            println("onActivityResult resultCode != RESULT_OK")
-            return
-        }
-
-        when (requestCode) {
-            REQUEST_IMAGE_CAPTURE -> {
+        permissionsManager.onActivityResult(
+            requestCode, resultCode, data, mapOf(PermissionsManager.PERMISSION_IMAGE_CAPTURE to {
                 @Suppress("DEPRECATION") val imageBitmap = data?.extras?.get("data") as Bitmap
                 val imageUri = saveImageLocally(imageBitmap)
                 if (imageUri != null) {
                     setProfilePic(imageUri)
-                    return
                 }
                 println("Could not save the profile picture locally")
-//                profilePicImageView.setImageBitmap(imageBitmap)
-            }
-
-            PermissionsManager.PERMISSION_PICK -> {
+            }, PermissionsManager.PERMISSION_PICK to {
                 val imageUri = data?.data
                 if (imageUri != null) {
                     setProfilePic(imageUri)
                 }
-            }
-        }
+            })
+        )
     }
 
 
     private fun saveImageLocally(bm: Bitmap): Uri? {
         val storageDir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         if (storageDir == null) {
-            displayToastMessage(
+            toastManager.showToast(
                 "Cannot save profile image locally, " + "photo directory doesn't exist"
             )
             return null
