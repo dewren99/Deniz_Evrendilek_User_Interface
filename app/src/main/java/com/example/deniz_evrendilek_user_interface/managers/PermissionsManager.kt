@@ -6,7 +6,10 @@ import androidx.core.app.ActivityCompat
 
 class PermissionsManager(private val activity: Activity) {
     companion object {
-        const val PERMISSION_REQUEST_CODE = 1001
+        const val PERMISSION_IMAGE_CAPTURE = 1001
+        const val PERMISSION_READ_STORAGE = 1002
+        const val PERMISSION_WRITE_STORAGE = 1003
+        const val PERMISSION_PICK = 1004
     }
 
     fun hasPermission(permission: String): Boolean {
@@ -17,7 +20,7 @@ class PermissionsManager(private val activity: Activity) {
     }
 
     fun requestPermissions(vararg permissions: String) {
-        ActivityCompat.requestPermissions(activity, permissions, PERMISSION_REQUEST_CODE)
+        ActivityCompat.requestPermissions(activity, permissions, PERMISSION_IMAGE_CAPTURE)
     }
 
     fun onRequestPermissionsResult(
@@ -27,7 +30,7 @@ class PermissionsManager(private val activity: Activity) {
         onPermissionGranted: () -> Unit,
         onPermissionDenied: () -> Unit
     ) {
-        if (requestCode == PERMISSION_REQUEST_CODE) {
+        if (requestCode == PERMISSION_IMAGE_CAPTURE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 onPermissionGranted()
             } else {

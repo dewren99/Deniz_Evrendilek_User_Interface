@@ -25,6 +25,7 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.deniz_evrendilek_user_interface.R
+import com.example.deniz_evrendilek_user_interface.managers.PermissionsManager
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -52,6 +53,15 @@ class ProfileFragment : Fragment() {
     private var profilePicUri: Uri? = null
     private lateinit var view: View
 
+    private fun setProfilePic(uri: Uri) {
+        profilePicUri = uri
+        profilePicImageView.setImageURI(profilePicUri)
+    }
+
+    private fun getProfilePic(): Uri? {
+        return profilePicUri
+    }
+
     private fun <T : View?> findViewById(id: Int): T {
         return view.findViewById<T>(id)
     }
@@ -78,7 +88,7 @@ class ProfileFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (profilePicUri != null) {
+        if (getProfilePic() != null) {
             println("onSaveInstanceState profilePicUri: $profilePicUri")
             outState.putString("profilePicUri", profilePicUri.toString())
         }
@@ -86,11 +96,12 @@ class ProfileFragment : Fragment() {
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
+        var maybeUri: Uri? = null
         if (savedInstanceState != null) {
-            profilePicUri = savedInstanceState.getString("profilePicUri", null)?.toUri()
+            maybeUri = savedInstanceState.getString("profilePicUri", null)?.toUri()
         }
-        if (profilePicUri != null) {
-            profilePicImageView.setImageURI(profilePicUri)
+        if (maybeUri != null) {
+            setProfilePic(maybeUri)
         }
         println("onRestoreInstanceState profilePicUri: $profilePicUri")
     }
@@ -103,7 +114,7 @@ class ProfileFragment : Fragment() {
         val gender = sharedPreferences.getInt("genderRadio", -1)
         val personClass = sharedPreferences.getString("classInput", "")
         val major = sharedPreferences.getString("majorInput", "")
-        profilePicUri = sharedPreferences.getString("profilePicUri", null)?.toUri()
+        val maybeUri = sharedPreferences.getString("profilePicUri", null)?.toUri()
 
         println(
             "loading data:$name, $email, $phone, $gender, $personClass, $major, $profilePicUri",
@@ -115,9 +126,9 @@ class ProfileFragment : Fragment() {
         radioGroupGender.check(gender)
         inputClass.setText(personClass)
         inputMajor.setText(major)
-        if (profilePicUri != null) {
+        if (maybeUri != null) {
+            setProfilePic(maybeUri)
             println("profilePicUri is valid: $profilePicUri")
-            profilePicImageView.setImageURI(profilePicUri)
         }
     }
 
@@ -136,9 +147,11 @@ class ProfileFragment : Fragment() {
         )
         sharedPrefEditor.putString("classInput", formValues["classInput"].toString())
         sharedPrefEditor.putString("majorInput", formValues["majorInput"].toString())
-        if (profilePicUri != null) {
+
+        val currUri = getProfilePic()
+        if (currUri != null) {
             sharedPrefEditor.putString(
-                "profilePicUri", profilePicUri.toString()
+                "profilePicUri", currUri.toString()
             )
         }
 
@@ -274,7 +287,10 @@ class ProfileFragment : Fragment() {
 
     private fun handleSelectImageFromGallery() {
         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-        @Suppress("DEPRECATION") startActivityForResult(galleryIntent, 1000)
+        @Suppress("DEPRECATION") startActivityForResult(
+            galleryIntent,
+            PermissionsManager.PERMISSION_PICK
+        )
     }
 
     private fun handleOnSelectImage() {
@@ -307,8 +323,20 @@ class ProfileFragment : Fragment() {
         when (requestCode) {
             REQUEST_IMAGE_CAPTURE -> {
                 @Suppress("DEPRECATION") val imageBitmap = data?.extras?.get("data") as Bitmap
-                profilePicImageView.setImageBitmap(imageBitmap)
-                profilePicUri = saveImageLocally(imageBitmap)
+                val imageUri = saveImageLocally(imageBitmap)
+                if (imageUri != null) {
+                    setProfilePic(imageUri)
+                    return
+                }
+                println("Could not save the profile picture locally")
+//                profilePicImageView.setImageBitmap(imageBitmap)
+            }
+
+            PermissionsManager.PERMISSION_PICK -> {
+                val imageUri = data?.data
+                if (imageUri != null) {
+                    setProfilePic(imageUri)
+                }
             }
         }
     }
