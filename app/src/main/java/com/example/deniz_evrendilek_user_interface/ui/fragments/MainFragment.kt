@@ -10,7 +10,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.deniz_evrendilek_user_interface.R
 import com.example.deniz_evrendilek_user_interface.ui.fragments.tabs.HistoryFragment
-import com.example.deniz_evrendilek_user_interface.ui.fragments.tabs.SettingsOuterFragment
+import com.example.deniz_evrendilek_user_interface.ui.fragments.tabs.SettingsFragment
 import com.example.deniz_evrendilek_user_interface.ui.fragments.tabs.StartFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -69,7 +69,7 @@ class MainFragment : Fragment() {
                 return when (position) {
                     0 -> StartFragment()
                     1 -> HistoryFragment()
-                    2 -> SettingsOuterFragment()
+                    2 -> SettingsFragment()
                     else -> throw IllegalStateException("Unexpected tab position: $position")
                 }
             }
