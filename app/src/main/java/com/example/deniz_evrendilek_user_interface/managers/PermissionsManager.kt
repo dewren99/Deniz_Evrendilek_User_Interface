@@ -21,24 +21,25 @@ class PermissionsManager(private val fragment: Fragment) {
     }
 
     fun requestPermission(permission: String, requestCode: Int) {
+        @Suppress("DEPRECATION")
         fragment.requestPermissions(arrayOf(permission), requestCode)
     }
 
     fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<out String>,
+        @Suppress("UNUSED_PARAMETER") ignoredPermissions: Array<out String>,
         grantResults: IntArray,
-        onPermissionGranted: () -> Unit,
-        onPermissionDenied: () -> Unit
+        onPermissionGranted: (requestCode: Int) -> Unit,
+        onPermissionDenied: (requestCode: Int) -> Unit
     ) {
         println("onRequestPermissionsResult requestCode")
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             println(
                 "grantResults.isNotEmpty() && grantResults[0] == PackageManager" + ".PERMISSION_GRANTED)"
             )
-            onPermissionGranted()
+            onPermissionGranted(requestCode)
         } else {
-            onPermissionDenied()
+            onPermissionDenied(requestCode)
         }
     }
 
@@ -46,13 +47,13 @@ class PermissionsManager(private val fragment: Fragment) {
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        actionMap: Map<Int, () -> Unit>,
+        actionMap: Map<Int, (data: Intent?) -> Unit>,
     ) {
         if (resultCode != Activity.RESULT_OK) {
             println("onActivityResult $resultCode != RESULT_OK")
             return
         }
 
-        actionMap[requestCode]?.invoke()
+        actionMap[requestCode]?.invoke(data)
     }
 }

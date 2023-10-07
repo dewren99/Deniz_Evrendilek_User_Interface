@@ -305,7 +305,7 @@ class ProfileFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         @Suppress("DEPRECATION") super.onActivityResult(requestCode, resultCode, data)
 
-        fun onImageCapture() {
+        fun onImageCapture(data: Intent?) {
             @Suppress("DEPRECATION") val imageBitmap = data?.extras?.get("data") as Bitmap
             val imageUri = saveImageLocally(imageBitmap)
             if (imageUri != null) {
@@ -324,7 +324,7 @@ class ProfileFragment : Fragment() {
             requestCode,
             resultCode,
             data,
-            mapOf(PermissionsManager.PERMISSION_IMAGE_CAPTURE to { onImageCapture() },
+            mapOf(PermissionsManager.PERMISSION_IMAGE_CAPTURE to { onImageCapture(it) },
                 PermissionsManager.PERMISSION_PICK to { onPermissionPick() })
         )
     }
@@ -342,16 +342,16 @@ class ProfileFragment : Fragment() {
         @Suppress("DEPRECATION") super.onRequestPermissionsResult(
             requestCode, permissions, grantResults
         )
-        fun onPermissionGranted() {
+        fun onPermissionGranted(requestCode: Int) {
             when (requestCode) {
                 PermissionsManager.PERMISSION_IMAGE_CAPTURE -> handleSelectImageWithCamera()
             }
         }
-        permissionsManager.onRequestPermissionsResult(
-            requestCode, permissions, grantResults, {
-                onPermissionGranted()
-            }, {}
-        )
+        permissionsManager.onRequestPermissionsResult(requestCode,
+            permissions,
+            grantResults,
+            { onPermissionGranted(it) },
+            { _ -> })
     }
 
 }

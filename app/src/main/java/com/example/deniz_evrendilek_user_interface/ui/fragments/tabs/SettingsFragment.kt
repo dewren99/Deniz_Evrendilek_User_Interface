@@ -36,6 +36,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         profilePreference.setOnPreferenceClickListener {
             navigateToProfile()
+            true
         }
         privacyPreference.setOnPreferenceChangeListener { _, newValue ->
             println("privacyPreference $newValue")
@@ -43,13 +44,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun navigateToProfile(): Boolean {
+    private fun navigateToProfile() {
         println("profilePreference click")
         val navHostFragment = requireActivity().supportFragmentManager.findFragmentById(
             R.id.nav_host_fragment
         ) as NavHostFragment
         navHostFragment.navController.navigate(R.id.profileFragment)
-        return true
     }
 
     private fun setupAdditionalSettings() {
