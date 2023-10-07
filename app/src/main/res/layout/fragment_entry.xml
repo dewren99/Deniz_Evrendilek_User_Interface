@@ -10,10 +10,14 @@
 
     <ListView
         android:id="@+id/list_view"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:stackFromBottom="true"
+        android:stackFromBottom="false"
         android:transcriptMode="alwaysScroll"
+        app:layout_constraintBottom_toTopOf="@id/entry_button_group"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:context=".ui.fragments.EntryFragment">
 
 
