@@ -4,8 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 
-class PermissionsManager(private val activity: Activity) {
+class PermissionsManager(private val fragment: Fragment) {
     companion object {
         const val PERMISSION_IMAGE_CAPTURE = 1001
         const val PERMISSION_READ_STORAGE = 1002
@@ -15,16 +16,12 @@ class PermissionsManager(private val activity: Activity) {
 
     fun hasPermission(permission: String): Boolean {
         return ActivityCompat.checkSelfPermission(
-            activity, permission
+            fragment.requireActivity(), permission
         ) == PackageManager.PERMISSION_GRANTED
     }
 
     fun requestPermission(permission: String, requestCode: Int) {
-        ActivityCompat.requestPermissions(activity, arrayOf(permission), requestCode)
-    }
-
-    fun requestPermissions(vararg permissions: String, requestCode: Int) {
-        ActivityCompat.requestPermissions(activity, permissions, requestCode)
+        fragment.requestPermissions(arrayOf(permission), requestCode)
     }
 
     fun onRequestPermissionsResult(
@@ -34,12 +31,14 @@ class PermissionsManager(private val activity: Activity) {
         onPermissionGranted: () -> Unit,
         onPermissionDenied: () -> Unit
     ) {
-        if (requestCode == PERMISSION_IMAGE_CAPTURE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                onPermissionGranted()
-            } else {
-                onPermissionDenied()
-            }
+        println("onRequestPermissionsResult requestCode")
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            println(
+                "grantResults.isNotEmpty() && grantResults[0] == PackageManager" + ".PERMISSION_GRANTED)"
+            )
+            onPermissionGranted()
+        } else {
+            onPermissionDenied()
         }
     }
 

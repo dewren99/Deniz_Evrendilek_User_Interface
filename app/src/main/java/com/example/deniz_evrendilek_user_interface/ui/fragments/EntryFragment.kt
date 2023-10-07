@@ -1,27 +1,24 @@
 package com.example.deniz_evrendilek_user_interface.ui.fragments
 
-import android.app.AlertDialog
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import android.content.DialogInterface
-import android.icu.util.Calendar
 import android.os.Bundle
 import android.text.InputType
-import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.DatePicker
-import android.widget.EditText
 import android.widget.ListView
-import android.widget.TimePicker
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.deniz_evrendilek_user_interface.R
 import com.example.deniz_evrendilek_user_interface.data.ExerciseDataState
+import com.example.deniz_evrendilek_user_interface.ui.fragments.dialogs.AlertDialogFragment
+import com.example.deniz_evrendilek_user_interface.ui.fragments.dialogs.DateListener
+import com.example.deniz_evrendilek_user_interface.ui.fragments.dialogs.DatePickerDialogFragment
+import com.example.deniz_evrendilek_user_interface.ui.fragments.dialogs.TimeListener
+import com.example.deniz_evrendilek_user_interface.ui.fragments.dialogs.TimePickerDialogFragment
 
 val ENTRY_OPTIONS = arrayOf(
     "Date", "Time", "Duration", "Distance", "Calories", "Heart Rate", "Comment"
@@ -30,9 +27,7 @@ val ENTRY_OPTIONS = arrayOf(
 private const val NEGATIVE_BUTTON_TEXT = "CANCEL"
 private const val POSITIVE_BUTTON_TEXT = "OK"
 
-class EntryFragment : Fragment(),
-        DatePickerDialog.OnDateSetListener,
-        TimePickerDialog.OnTimeSetListener {
+class EntryFragment : Fragment(), DateListener, TimeListener {
     private lateinit var view: View
     private lateinit var listView: ListView
     private lateinit var buttonSave: Button
@@ -41,19 +36,55 @@ class EntryFragment : Fragment(),
     private var exerciseDataState = ExerciseDataState()
 
 
-    @Suppress("RedundantOverride")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
+        println("onCreateView")
         view = inflater.inflate(R.layout.fragment_entry, container, false)
         setupListView()
         return view
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        println("onSaveInstanceState")
+        super.onSaveInstanceState(outState)
+
+        exerciseDataState.saveInstanceState({ key: String, value: String? ->
+            outState.putString(key, value)
+        }, { key: String, value: Int ->
+            outState.putInt(key, value)
+        })
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        println("onViewCreated")
+        super.onViewCreated(view, savedInstanceState)
+        if (savedInstanceState == null) {
+            return
+        }
+
+        val restoredData =
+            exerciseDataState.restoreSavedInstanceState({ key: String, defaultValue: String ->
+                savedInstanceState.getString(key, defaultValue)
+            }) { key: String, defaultValue: Int ->
+                savedInstanceState.getInt(key, defaultValue)
+            }
+        println(restoredData)
+        exerciseDataState = restoredData
+    }
+
+    private fun handleOnItemClickListener(selected: String) {
+        when (selected) {
+            ENTRY_OPTIONS[0] -> createAndShowDatePicker()
+            ENTRY_OPTIONS[1] -> createAndShowTimePicker()
+            ENTRY_OPTIONS[2] -> createAndShowDurationDialog()
+            ENTRY_OPTIONS[3] -> createAndShowDistanceDialog()
+            ENTRY_OPTIONS[4] -> createAndShowCaloriesDialog()
+            ENTRY_OPTIONS[5] -> createAndShowHeartRateDialog()
+            ENTRY_OPTIONS[6] -> createAndShowCommentDialog()
+            else -> throw IllegalStateException("Unexpected listView selection: $selected")
+        }
     }
 
     private fun setupListView() {
@@ -65,16 +96,7 @@ class EntryFragment : Fragment(),
             val selected = parent.getItemAtPosition(position) as String
             println(selected)
 
-            when (selected) {
-                ENTRY_OPTIONS[0] -> createAndShowDatePicker()
-                ENTRY_OPTIONS[1] -> createAndShowTimePicker()
-                ENTRY_OPTIONS[2] -> createAndShowDurationDialog()
-                ENTRY_OPTIONS[3] -> createAndShowDistanceDialog()
-                ENTRY_OPTIONS[4] -> createAndShowCaloriesDialog()
-                ENTRY_OPTIONS[5] -> createAndShowHeartRateDialog()
-                ENTRY_OPTIONS[6] -> createAndShowCommentDialog()
-                else -> throw IllegalStateException("Unexpected listView selection: $selected")
-            }
+            handleOnItemClickListener(selected)
         }
 
         buttonSave = view.findViewById(R.id.manual_entry_save_button)
@@ -89,46 +111,23 @@ class EntryFragment : Fragment(),
     }
 
     private fun createAndShowDatePicker() {
-        val calendar: Calendar = Calendar.getInstance()
-        if (exerciseDataState.day == null || exerciseDataState.month == null || exerciseDataState.year == null) {
-            exerciseDataState.day = calendar.get(Calendar.DAY_OF_MONTH)
-            exerciseDataState.month = calendar.get(Calendar.MONTH)
-            exerciseDataState.year = calendar.get(Calendar.YEAR)
-        }
         val (day, month, year) = exerciseDataState
-        val datePickerDialog = DatePickerDialog(requireActivity(), this, year!!, month!!, day!!)
-        datePickerDialog.show()
+        val datePickerDialog = DatePickerDialogFragment(
+            year, month, day
+        )
+        @Suppress("DEPRECATION") datePickerDialog.setTargetFragment(this, 0)
+        datePickerDialog.show(parentFragmentManager, "datePicker")
     }
 
     private fun createAndShowTimePicker() {
-        val calendar: Calendar = Calendar.getInstance()
-        exerciseDataState.hour = calendar.get(Calendar.HOUR)
-        exerciseDataState.minute = calendar.get(Calendar.MINUTE)
-
-        val timePickerDialog = TimePickerDialog(
-            requireActivity(),
-            this,
-            exerciseDataState.hour!!,
-            exerciseDataState.minute!!,
-            DateFormat.is24HourFormat(requireContext())
-        )
-        timePickerDialog.show()
-    }
-
-    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        exerciseDataState.year = year
-        exerciseDataState.month = month
-        exerciseDataState.day = dayOfMonth
-    }
-
-    override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-        exerciseDataState.hour = hourOfDay
-        exerciseDataState.minute = minute
-        println("$hourOfDay:$minute")
+        val timePickerDialogFragment =
+            TimePickerDialogFragment(exerciseDataState.hour, exerciseDataState.minute)
+        @Suppress("DEPRECATION") timePickerDialogFragment.setTargetFragment(this, 0)
+        timePickerDialogFragment.show(parentFragmentManager, "timePicker")
     }
 
     @Suppress("SameParameterValue")
-    private fun createInputDialog(
+    private fun createAndShowAlertDialog(
         title: String,
         inputType: Int,
         placeHolder: String?,
@@ -136,90 +135,80 @@ class EntryFragment : Fragment(),
         negativeButtonText: String,
         positiveButtonCallback: (DialogInterface, Int) -> Unit,
         negativeButtonCallback: (DialogInterface, Int) -> Unit
-    ): AlertDialog.Builder {
-        val builder = AlertDialog.Builder(requireContext())
-        val input = EditText(requireContext())
-
-        builder.setTitle(title)
-        input.inputType = inputType
-        if (inputType == InputType.TYPE_TEXT_FLAG_MULTI_LINE) {
-            input.isSingleLine = false
-            input.minLines = 3
-        }
-        if (placeHolder != null) {
-            input.hint = placeHolder
-        }
-        builder.setView(input)
-        builder.setPositiveButton(positiveButtonText) { dialog, i ->
-            positiveButtonCallback(dialog, i)
-            println(input.text.toString())
-        }
-        builder.setNegativeButton(negativeButtonText) { dialog, i ->
-            negativeButtonCallback(dialog, i)
-            println(input.text.toString())
-        }
-        return builder
+    ) {
+        val alertDialogFragment = AlertDialogFragment(
+            title,
+            inputType,
+            placeHolder,
+            positiveButtonText,
+            negativeButtonText,
+            positiveButtonCallback,
+            negativeButtonCallback
+        )
+        alertDialogFragment.show(parentFragmentManager, title)
     }
 
     private fun createAndShowDurationDialog() {
-        val dialog = createInputDialog(
-            ENTRY_OPTIONS[2],
+        createAndShowAlertDialog(ENTRY_OPTIONS[2],
             InputType.TYPE_CLASS_NUMBER,
             null,
             POSITIVE_BUTTON_TEXT,
             NEGATIVE_BUTTON_TEXT,
             { _, _ -> println("OK") },
             { _, _ -> println("CANCEL") })
-        dialog.show()
     }
 
     private fun createAndShowDistanceDialog() {
-        val dialog = createInputDialog(
-            ENTRY_OPTIONS[3],
+        createAndShowAlertDialog(ENTRY_OPTIONS[3],
             InputType.TYPE_CLASS_NUMBER,
             null,
             POSITIVE_BUTTON_TEXT,
             NEGATIVE_BUTTON_TEXT,
             { _, _ -> println("OK") },
             { _, _ -> println("CANCEL") })
-        dialog.show()
     }
 
     private fun createAndShowCaloriesDialog() {
-        val dialog = createInputDialog(
-            ENTRY_OPTIONS[4],
+        createAndShowAlertDialog(ENTRY_OPTIONS[4],
             InputType.TYPE_CLASS_NUMBER,
             null,
             POSITIVE_BUTTON_TEXT,
             NEGATIVE_BUTTON_TEXT,
             { _, _ -> println("OK") },
             { _, _ -> println("CANCEL") })
-        dialog.show()
     }
 
     private fun createAndShowHeartRateDialog() {
-        val dialog = createInputDialog(
-            ENTRY_OPTIONS[5],
+        createAndShowAlertDialog(ENTRY_OPTIONS[5],
             InputType.TYPE_CLASS_NUMBER,
             null,
             POSITIVE_BUTTON_TEXT,
             NEGATIVE_BUTTON_TEXT,
             { _, _ -> println("OK") },
             { _, _ -> println("CANCEL") })
-        dialog.show()
     }
 
     private fun createAndShowCommentDialog() {
         val hint = "How did it go? Notes here."
-        val dialog = createInputDialog(
-            ENTRY_OPTIONS[6],
+        createAndShowAlertDialog(ENTRY_OPTIONS[6],
             InputType.TYPE_TEXT_FLAG_MULTI_LINE,
             hint,
             POSITIVE_BUTTON_TEXT,
             NEGATIVE_BUTTON_TEXT,
             { _, _ -> println("OK") },
             { _, _ -> println("CANCEL") })
-        dialog.show()
+    }
+
+    override fun onDateSelected(year: Int, month: Int, dayOfMonth: Int) {
+        exerciseDataState.year = year
+        exerciseDataState.month = month
+        exerciseDataState.day = dayOfMonth
+    }
+
+    override fun onTimeSelected(hourOfDay: Int, minute: Int) {
+        exerciseDataState.hour = hourOfDay
+        exerciseDataState.minute = minute
+        println("$hourOfDay:$minute")
     }
 
 }

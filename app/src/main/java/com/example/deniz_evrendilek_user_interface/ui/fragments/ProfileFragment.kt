@@ -73,14 +73,14 @@ class ProfileFragment : Fragment() {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_profile, container, false)
         profileData = ProfileData(requireContext())
-        permissionsManager = PermissionsManager(requireActivity())
+        permissionsManager = PermissionsManager(this)
         toastManager = ToastManager(requireContext())
         setupProfilePage()
         return view
     }
 
     private fun setupProfilePage() {
-        maybeRequestPermissions()
+//        maybeRequestPermissions()
         setupViewVariables()
         loadProfile()
     }
@@ -159,6 +159,7 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    @Suppress("unused")
     private fun maybeRequestReadStoragePermission() {
         if (!hasReadStoragePermission()) {
             permissionsManager.requestPermission(
@@ -168,6 +169,7 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    @Suppress("unused")
     private fun maybeRequestWriteStoragePermission() {
         if (!hasWriteStoragePermission()) {
             permissionsManager.requestPermission(
@@ -175,12 +177,6 @@ class ProfileFragment : Fragment() {
                 PermissionsManager.PERMISSION_WRITE_STORAGE
             )
         }
-    }
-
-    private fun maybeRequestPermissions() {
-        maybeRequestCameraPermission()
-        maybeRequestReadStoragePermission()
-        maybeRequestWriteStoragePermission()
     }
 
     private fun setupViewVariables() {
@@ -243,10 +239,6 @@ class ProfileFragment : Fragment() {
     }
 
     private fun handleSelectImageWithCamera() {
-        if (!hasCameraPermission()) {
-            exitProfile()
-            return
-        }
         println("Select Image")
         val cameraIntent = Intent(ACTION_IMAGE_CAPTURE)
         @Suppress("DEPRECATION") startActivityForResult(
@@ -267,7 +259,13 @@ class ProfileFragment : Fragment() {
         val options = arrayOf("Take Picture", "Choose from Gallery")
         builder.setItems(options) { _, which ->
             when (which) {
-                0 -> handleSelectImageWithCamera()
+                0 -> {
+                    if (!hasCameraPermission())
+                    // Request permission here, callback inside onRequestPermissionsResult
+                        maybeRequestCameraPermission()
+                    else handleSelectImageWithCamera()
+                }
+
                 1 -> handleSelectImageFromGallery()
                 else -> throw IllegalAccessError("Cannot find the select image type")
             }
@@ -276,30 +274,6 @@ class ProfileFragment : Fragment() {
         val dialog = builder.create()
         dialog.show()
     }
-
-    /**
-     * @source https://developer.android.com/training/camera-deprecated/photobasics
-     */
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        @Suppress("DEPRECATION") super.onActivityResult(requestCode, resultCode, data)
-        permissionsManager.onActivityResult(
-            requestCode, resultCode, data, mapOf(PermissionsManager.PERMISSION_IMAGE_CAPTURE to {
-                @Suppress("DEPRECATION") val imageBitmap = data?.extras?.get("data") as Bitmap
-                val imageUri = saveImageLocally(imageBitmap)
-                if (imageUri != null) {
-                    setProfilePic(imageUri)
-                }
-                println("Could not save the profile picture locally")
-            }, PermissionsManager.PERMISSION_PICK to {
-                val imageUri = data?.data
-                if (imageUri != null) {
-                    setProfilePic(imageUri)
-                }
-            })
-        )
-    }
-
 
     private fun saveImageLocally(bm: Bitmap): Uri? {
         val storageDir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -323,4 +297,61 @@ class ProfileFragment : Fragment() {
         }
         return Uri.fromFile(imageFile)
     }
+
+    /**
+     * @source https://developer.android.com/training/camera-deprecated/photobasics
+     */
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        @Suppress("DEPRECATION") super.onActivityResult(requestCode, resultCode, data)
+
+        fun onImageCapture() {
+            @Suppress("DEPRECATION") val imageBitmap = data?.extras?.get("data") as Bitmap
+            val imageUri = saveImageLocally(imageBitmap)
+            if (imageUri != null) {
+                setProfilePic(imageUri)
+            }
+            println("Could not save the profile picture locally")
+        }
+
+        fun onPermissionPick() {
+            val imageUri = data?.data
+            if (imageUri != null) {
+                setProfilePic(imageUri)
+            }
+        }
+        permissionsManager.onActivityResult(
+            requestCode,
+            resultCode,
+            data,
+            mapOf(PermissionsManager.PERMISSION_IMAGE_CAPTURE to { onImageCapture() },
+                PermissionsManager.PERMISSION_PICK to { onPermissionPick() })
+        )
+    }
+
+
+    @Deprecated(
+        "Deprecated in Java", ReplaceWith(
+            "super.onRequestPermissionsResult(requestCode, permissions, grantResults)",
+            "androidx.fragment.app.Fragment"
+        )
+    )
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        @Suppress("DEPRECATION") super.onRequestPermissionsResult(
+            requestCode, permissions, grantResults
+        )
+        fun onPermissionGranted() {
+            when (requestCode) {
+                PermissionsManager.PERMISSION_IMAGE_CAPTURE -> handleSelectImageWithCamera()
+            }
+        }
+        permissionsManager.onRequestPermissionsResult(
+            requestCode, permissions, grantResults, {
+                onPermissionGranted()
+            }, {}
+        )
+    }
+
 }
