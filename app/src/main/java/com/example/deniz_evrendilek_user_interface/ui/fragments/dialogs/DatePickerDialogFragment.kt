@@ -23,8 +23,8 @@ class DatePickerDialogFragment(
         return DatePickerDialog(requireContext(), this, _year, _month, _day)
     }
 
+    @Suppress("DEPRECATION")
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        @Suppress("DEPRECATION")
         (targetFragment as? DateListener)?.onDateSelected(year, month, dayOfMonth)
     }
 }

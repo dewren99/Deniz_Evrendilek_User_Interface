@@ -1,6 +1,5 @@
 package com.example.deniz_evrendilek_user_interface.ui.fragments
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -25,12 +24,14 @@ import com.example.deniz_evrendilek_user_interface.R
 import com.example.deniz_evrendilek_user_interface.data.ProfileData
 import com.example.deniz_evrendilek_user_interface.managers.PermissionsManager
 import com.example.deniz_evrendilek_user_interface.managers.ToastManager
+import com.example.deniz_evrendilek_user_interface.ui.fragments.dialogs.AlertDialogFragment
+import com.example.deniz_evrendilek_user_interface.ui.fragments.dialogs.AlertDialogOnClickListener
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : Fragment(), AlertDialogOnClickListener {
     // Buttons | Images
     private lateinit var profilePicImageView: ImageView
     private lateinit var selectImageButton: Button
@@ -79,16 +80,14 @@ class ProfileFragment : Fragment() {
         permissionsManager = PermissionsManager(this)
         toastManager = ToastManager(requireContext())
         setupProfilePage()
-        @Suppress("DEPRECATION")
-        setHasOptionsMenu(true)
+        @Suppress("DEPRECATION") setHasOptionsMenu(true)
         return view
     }
 
     @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu, menu)
-        @Suppress("DEPRECATION")
-        super.onCreateOptionsMenu(menu, inflater)
+        @Suppress("DEPRECATION") super.onCreateOptionsMenu(menu, inflater)
     }
 
     @Deprecated("Deprecated in Java")
@@ -99,8 +98,7 @@ class ProfileFragment : Fragment() {
                 return true
             }
         }
-        @Suppress("DEPRECATION")
-        return super.onOptionsItemSelected(item)
+        @Suppress("DEPRECATION") return super.onOptionsItemSelected(item)
     }
 
 
@@ -111,15 +109,14 @@ class ProfileFragment : Fragment() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
         if (getProfilePic() != null) {
             println("onSaveInstanceState profilePicUri: $profilePicUri")
             outState.putString("profilePicUri", profilePicUri.toString())
         }
+        super.onSaveInstanceState(outState)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
         var maybeUri: Uri? = null
         if (savedInstanceState != null) {
             maybeUri = savedInstanceState.getString("profilePicUri", null)?.toUri()
@@ -128,6 +125,7 @@ class ProfileFragment : Fragment() {
             setProfilePic(maybeUri)
         }
         println("onRestoreInstanceState profilePicUri: $profilePicUri")
+        super.onViewStateRestored(savedInstanceState)
     }
 
     private fun loadProfile() {
@@ -140,8 +138,8 @@ class ProfileFragment : Fragment() {
         inputEmail.setText(data[ProfileData.KEYS.EMAIL])
         inputPhone.setText(data[ProfileData.KEYS.PHONE])
         radioGroupGender.check(data[ProfileData.KEYS.GENDER]?.toIntOrNull() ?: -1)
-        inputClass.setText(data[ProfileData.KEYS.EMAIL])
-        inputMajor.setText(data[ProfileData.KEYS.EMAIL])
+        inputClass.setText(data[ProfileData.KEYS.CLASS])
+        inputMajor.setText(data[ProfileData.KEYS.MAJOR])
 
         val maybeUri = data[ProfileData.KEYS.PROFILE_IMAGE_URI]?.toUri()
         val emptyUri = "".toUri()
@@ -169,20 +167,8 @@ class ProfileFragment : Fragment() {
         )
     }
 
-    private fun hasCameraPermission(): Boolean {
-        return permissionsManager.hasPermission(android.Manifest.permission.CAMERA)
-    }
-
-    private fun hasReadStoragePermission(): Boolean {
-        return permissionsManager.hasPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-    }
-
-    private fun hasWriteStoragePermission(): Boolean {
-        return permissionsManager.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    }
-
     private fun maybeRequestCameraPermission() {
-        if (!hasCameraPermission()) {
+        if (!permissionsManager.hasCameraPermission()) {
             permissionsManager.requestPermission(
                 android.Manifest.permission.CAMERA, PermissionsManager.PERMISSION_IMAGE_CAPTURE
             )
@@ -191,7 +177,7 @@ class ProfileFragment : Fragment() {
 
     @Suppress("unused")
     private fun maybeRequestReadStoragePermission() {
-        if (!hasReadStoragePermission()) {
+        if (!permissionsManager.hasReadStoragePermission()) {
             permissionsManager.requestPermission(
                 android.Manifest.permission.READ_EXTERNAL_STORAGE,
                 PermissionsManager.PERMISSION_READ_STORAGE
@@ -201,7 +187,7 @@ class ProfileFragment : Fragment() {
 
     @Suppress("unused")
     private fun maybeRequestWriteStoragePermission() {
-        if (!hasWriteStoragePermission()) {
+        if (!permissionsManager.hasWriteStoragePermission()) {
             permissionsManager.requestPermission(
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 PermissionsManager.PERMISSION_WRITE_STORAGE
@@ -284,25 +270,13 @@ class ProfileFragment : Fragment() {
     }
 
     private fun handleOnSelectImage() {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Select Image")
         val options = arrayOf("Take Picture", "Choose from Gallery")
-        builder.setItems(options) { _, which ->
-            when (which) {
-                0 -> {
-                    if (!hasCameraPermission())
-                    // Request permission here, callback inside onRequestPermissionsResult
-                        maybeRequestCameraPermission()
-                    else handleSelectImageWithCamera()
-                }
+        val title = "Select Image"
+        val alertDialogFragment = AlertDialogFragment(
+            title, null, null, null, null, null, null, options
+        )
 
-                1 -> handleSelectImageFromGallery()
-                else -> throw IllegalAccessError("Cannot find the select image type")
-            }
-        }
-
-        val dialog = builder.create()
-        dialog.show()
+        alertDialogFragment.show(childFragmentManager, title)
     }
 
     private fun saveImageLocally(bm: Bitmap): Uri? {
@@ -382,6 +356,27 @@ class ProfileFragment : Fragment() {
             grantResults,
             { onPermissionGranted(it) },
             { _ -> })
+    }
+
+    private fun dialogListOnClickListener(
+        which: Int
+    ) {
+        when (which) {
+            0 -> {
+                if (!permissionsManager.hasCameraPermission())
+                // Request permission here, callback inside onRequestPermissionsResult
+                    maybeRequestCameraPermission()
+                else handleSelectImageWithCamera()
+            }
+
+            1 -> handleSelectImageFromGallery()
+            else -> throw IllegalAccessError("Cannot find the select image type")
+        }
+    }
+
+    override fun onListItemClicked(position: Int) {
+        println("onListItemClicked")
+        dialogListOnClickListener(position)
     }
 
 }

@@ -143,9 +143,10 @@ class EntryFragment : Fragment(), DateListener, TimeListener {
             positiveButtonText,
             negativeButtonText,
             positiveButtonCallback,
-            negativeButtonCallback
+            negativeButtonCallback,
+            null
         )
-        alertDialogFragment.show(parentFragmentManager, title)
+        alertDialogFragment.show(childFragmentManager, title)
     }
 
     private fun createAndShowDurationDialog() {

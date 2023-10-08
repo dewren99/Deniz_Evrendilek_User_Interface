@@ -25,8 +25,9 @@ class TimePickerDialogFragment(private val _hour: Int, private val _minute: Int)
         )
     }
 
+    @Suppress("DEPRECATION")
     override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-        @Suppress("DEPRECATION") (targetFragment as? TimeListener)?.onTimeSelected(
+        (targetFragment as? TimeListener)?.onTimeSelected(
             hourOfDay, minute
         )
     }

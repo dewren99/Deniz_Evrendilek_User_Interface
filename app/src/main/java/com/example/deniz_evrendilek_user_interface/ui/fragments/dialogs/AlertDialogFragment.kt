@@ -1,6 +1,6 @@
 package com.example.deniz_evrendilek_user_interface.ui.fragments.dialogs
 
-import android.app.AlertDialog
+import android.app.AlertDialog.Builder
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
@@ -8,14 +8,19 @@ import android.text.InputType
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
 
+interface AlertDialogOnClickListener {
+    fun onListItemClicked(position: Int)
+}
+
 class AlertDialogFragment(
     private val title: String,
-    private val inputType: Int,
+    private val inputType: Int?,
     private val placeHolder: String?,
-    private val positiveButtonText: String,
-    private val negativeButtonText: String,
-    private val positiveButtonCallback: (DialogInterface, Int) -> Unit,
-    private val negativeButtonCallback: (DialogInterface, Int) -> Unit
+    private val positiveButtonText: String?,
+    private val negativeButtonText: String?,
+    private val positiveButtonCallback: ((DialogInterface, Int) -> Unit)?,
+    private val negativeButtonCallback: ((DialogInterface, Int) -> Unit)?,
+    private val listItems: Array<String>?,
 ) : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,14 +30,35 @@ class AlertDialogFragment(
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        println("onCreateDialog")
         return createAlertDialog()
     }
 
     private fun createAlertDialog(): Dialog {
-        val builder = AlertDialog.Builder(requireContext())
-        val input = EditText(requireContext())
+        val builder = Builder(requireActivity())
+        val input = EditText(requireActivity())
 
         builder.setTitle(title)
+        setBody(builder, input)
+
+        return builder.create()
+    }
+
+    private fun setBody(builder: Builder, input: EditText) {
+        if (listItems != null) {
+            setList(builder)
+            return
+        }
+
+        setInputType(input)
+        builder.setView(input)
+        setButtons(builder, input)
+    }
+
+    private fun setInputType(input: EditText) {
+        if (inputType == null) {
+            return
+        }
         input.inputType = inputType
         if (inputType == InputType.TYPE_TEXT_FLAG_MULTI_LINE) {
             input.isSingleLine = false
@@ -41,16 +67,33 @@ class AlertDialogFragment(
         if (placeHolder != null) {
             input.hint = placeHolder
         }
-        builder.setView(input)
-        builder.setPositiveButton(positiveButtonText) { dialog, i ->
-            positiveButtonCallback(dialog, i)
-            println(input.text.toString())
-        }
-        builder.setNegativeButton(negativeButtonText) { dialog, i ->
-            negativeButtonCallback(dialog, i)
-            println(input.text.toString())
+    }
+
+    private fun setButtons(builder: Builder, input: EditText) {
+        if (positiveButtonCallback != null && positiveButtonText != null) {
+            builder.setPositiveButton(positiveButtonText) { dialog, i ->
+                positiveButtonCallback.invoke(dialog, i)
+                println(input.text.toString())
+            }
         }
 
-        return builder.create()
+        if (negativeButtonCallback != null && negativeButtonText != null) {
+            builder.setNegativeButton(negativeButtonText) { dialog, i ->
+                negativeButtonCallback.invoke(dialog, i)
+                println(input.text.toString())
+            }
+        }
+    }
+
+    private fun setList(builder: Builder) {
+        if (listItems == null) {
+            return
+        }
+        builder.setItems(listItems) { _, which -> onListItemClicked(which) }
+    }
+
+    private fun onListItemClicked(position: Int) {
+        println("onListItemClicked")
+        (parentFragment as? AlertDialogOnClickListener)?.onListItemClicked(position)
     }
 }

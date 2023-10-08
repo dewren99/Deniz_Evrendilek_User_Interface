@@ -14,7 +14,7 @@ class PermissionsManager(private val fragment: Fragment) {
         const val PERMISSION_PICK = 1004
     }
 
-    fun hasPermission(permission: String): Boolean {
+    private fun hasPermission(permission: String): Boolean {
         return ActivityCompat.checkSelfPermission(
             fragment.requireActivity(), permission
         ) == PackageManager.PERMISSION_GRANTED
@@ -55,5 +55,17 @@ class PermissionsManager(private val fragment: Fragment) {
         }
 
         actionMap[requestCode]?.invoke(data)
+    }
+
+    fun hasCameraPermission(): Boolean {
+        return hasPermission(android.Manifest.permission.CAMERA)
+    }
+
+    fun hasReadStoragePermission(): Boolean {
+        return hasPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
+
+    fun hasWriteStoragePermission(): Boolean {
+        return hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
     }
 }
