@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.deniz_evrendilek_user_interface.R
@@ -41,6 +41,6 @@ class MapFragment : Fragment() {
     }
 
     private fun setToolbarHeader() {
-        requireActivity().findViewById<TextView>(R.id.toolbar_header).text = MAP_HEADER
+        requireActivity().findViewById<Toolbar>(R.id.toolbar).title = MAP_HEADER
     }
 }

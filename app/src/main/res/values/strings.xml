@@ -55,4 +55,5 @@
     <string name="input_type_title">Input Type</string>
     <string name="activity_type_title">Activity Type</string>
     <string name="button_start">START</string>
+    <string name="menu_item_settings">Settings</string>
 </resources>

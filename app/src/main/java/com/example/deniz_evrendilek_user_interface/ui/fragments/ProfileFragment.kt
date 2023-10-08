@@ -9,6 +9,9 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.provider.MediaStore.ACTION_IMAGE_CAPTURE
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -76,8 +79,30 @@ class ProfileFragment : Fragment() {
         permissionsManager = PermissionsManager(this)
         toastManager = ToastManager(requireContext())
         setupProfilePage()
+        @Suppress("DEPRECATION")
+        setHasOptionsMenu(true)
         return view
     }
+
+    @Deprecated("Deprecated in Java")
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu, menu)
+        @Suppress("DEPRECATION")
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_navigate_to_settings -> {
+                exitProfile()
+                return true
+            }
+        }
+        @Suppress("DEPRECATION")
+        return super.onOptionsItemSelected(item)
+    }
+
 
     private fun setupProfilePage() {
 //        maybeRequestPermissions()
@@ -108,6 +133,9 @@ class ProfileFragment : Fragment() {
     private fun loadProfile() {
         val data = profileData.load()
 
+        println(data[ProfileData.KEYS.GENDER])
+        println(data[ProfileData.KEYS.GENDER]?.toIntOrNull() ?: -1)
+
         inputName.setText(data[ProfileData.KEYS.NAME])
         inputEmail.setText(data[ProfileData.KEYS.EMAIL])
         inputPhone.setText(data[ProfileData.KEYS.PHONE])
@@ -127,6 +155,8 @@ class ProfileFragment : Fragment() {
         // Retrieve values from input fields using getFormValues()
         val formValues = getFormValues()
         val currUri = getProfilePic() ?: ""
+
+        println(formValues["genderRadio"].toString())
 
         profileData.save(
             formValues["nameInput"].toString(),
